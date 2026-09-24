@@ -16,8 +16,6 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Carbon;
@@ -37,13 +35,13 @@ class QuoteForm
                             ->preload()
                             ->required()
                             ->live()
-                            ->afterStateUpdated(function (Set $set) {
+                            ->afterStateUpdated(function ($set) {
                                 $set('contact_id', null);
                             }),
 
                         Select::make('contact_id')
                             ->label('Kontaktna oseba')
-                            ->options(function (Get $get) {
+                            ->options(function ($get) {
                                 $customerId = $get('customer_id');
                                 if (! $customerId) {
                                     return [];
@@ -92,7 +90,7 @@ class QuoteForm
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(function (?int $state, Set $set) {
+                                    ->afterStateUpdated(function (?int $state, $set) {
                                         if (! $state) {
                                             return;
                                         }
@@ -123,7 +121,7 @@ class QuoteForm
                                     ->default(1)
                                     ->required()
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => self::updateLineTotals($set, $get)),
+                                    ->afterStateUpdated(fn ($set, $get) => self::updateLineTotals($set, $get)),
 
                                 TextInput::make('unit_price')
                                     ->label('Cena/enoto')
@@ -131,7 +129,7 @@ class QuoteForm
                                     ->prefix('€')
                                     ->required()
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => self::updateLineTotals($set, $get)),
+                                    ->afterStateUpdated(fn ($set, $get) => self::updateLineTotals($set, $get)),
 
                                 TextInput::make('discount_percent')
                                     ->label('Popust %')
@@ -139,26 +137,26 @@ class QuoteForm
                                     ->default(0)
                                     ->suffix('%')
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => self::updateLineTotals($set, $get)),
+                                    ->afterStateUpdated(fn ($set, $get) => self::updateLineTotals($set, $get)),
 
                                 Select::make('vat_rate')
                                     ->label('DDV stopnja')
                                     ->options(VatRate::class)
                                     ->required()
                                     ->live()
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => self::updateLineTotals($set, $get)),
+                                    ->afterStateUpdated(fn ($set, $get) => self::updateLineTotals($set, $get)),
 
                                 Placeholder::make('line_net')
                                     ->label('Neto')
-                                    ->content(fn (Get $get) => '€ '.number_format((float) ($get('line_net') ?? 0), 2, ',', '.')),
+                                    ->content(fn ($get) => '€ '.number_format((float) ($get('line_net') ?? 0), 2, ',', '.')),
 
                                 Placeholder::make('line_vat')
                                     ->label('DDV')
-                                    ->content(fn (Get $get) => '€ '.number_format((float) ($get('line_vat') ?? 0), 2, ',', '.')),
+                                    ->content(fn ($get) => '€ '.number_format((float) ($get('line_vat') ?? 0), 2, ',', '.')),
 
                                 Placeholder::make('line_total')
                                     ->label('Skupaj')
-                                    ->content(fn (Get $get) => '€ '.number_format((float) ($get('line_total') ?? 0), 2, ',', '.')),
+                                    ->content(fn ($get) => '€ '.number_format((float) ($get('line_total') ?? 0), 2, ',', '.')),
 
                                 // Hidden fields to store calculated values
                                 Hidden::make('line_net'),
@@ -170,26 +168,26 @@ class QuoteForm
                             ->defaultItems(1)
                             ->addActionLabel('Dodaj postavko')
                             ->live()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateDocumentTotals($set, $get)),
+                            ->afterStateUpdated(fn ($set, $get) => self::updateDocumentTotals($set, $get)),
                     ]),
 
                 Section::make('Seštevki')
                     ->schema([
                         Placeholder::make('subtotal_display')
                             ->label('Neto vsota')
-                            ->content(fn (Get $get) => '€ '.number_format((float) ($get('subtotal') ?? 0), 2, ',', '.')),
+                            ->content(fn ($get) => '€ '.number_format((float) ($get('subtotal') ?? 0), 2, ',', '.')),
 
                         Placeholder::make('discount_total_display')
                             ->label('Popust skupaj')
-                            ->content(fn (Get $get) => '€ '.number_format((float) ($get('discount_total') ?? 0), 2, ',', '.')),
+                            ->content(fn ($get) => '€ '.number_format((float) ($get('discount_total') ?? 0), 2, ',', '.')),
 
                         Placeholder::make('vat_total_display')
                             ->label('DDV skupaj')
-                            ->content(fn (Get $get) => '€ '.number_format((float) ($get('vat_total') ?? 0), 2, ',', '.')),
+                            ->content(fn ($get) => '€ '.number_format((float) ($get('vat_total') ?? 0), 2, ',', '.')),
 
                         Placeholder::make('total_display')
                             ->label('Skupaj z DDV')
-                            ->content(fn (Get $get) => '€ '.number_format((float) ($get('total') ?? 0), 2, ',', '.'))
+                            ->content(fn ($get) => '€ '.number_format((float) ($get('total') ?? 0), 2, ',', '.'))
                             ->extraAttributes(['class' => 'text-xl font-bold']),
 
                         // Hidden fields to store totals
@@ -214,7 +212,7 @@ class QuoteForm
             ]);
     }
 
-    protected static function updateLineTotals(Set $set, Get $get): void
+    protected static function updateLineTotals($set, $get): void
     {
         $calculated = DocumentTotalsCalculator::calculateLineItem([
             'quantity' => $get('quantity') ?? 0,
@@ -228,7 +226,7 @@ class QuoteForm
         $set('line_total', $calculated['line_total']);
     }
 
-    protected static function updateDocumentTotals(Set $set, Get $get): void
+    protected static function updateDocumentTotals($set, $get): void
     {
         $items = $get('../../items') ?? [];
 

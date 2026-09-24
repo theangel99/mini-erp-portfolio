@@ -2,23 +2,13 @@
 
 namespace App\Filament\Resources\Quotes\Schemas;
 
-use App\Enums\ProductUnit;
 use App\Enums\QuoteStatus;
-use App\Enums\VatRate;
-use App\Models\Contact;
-use App\Models\Customer;
-use App\Models\Product;
-use App\Services\DocumentTotalsCalculator;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Carbon;
 
 class QuoteForm
 {
@@ -32,27 +22,7 @@ class QuoteForm
                             ->label('Stranka')
                             ->relationship('customer', 'name')
                             ->searchable()
-                            ->preload()
-                            ->required()
-                            ->live()
-                            ->afterStateUpdated(function ($set) {
-                                $set('contact_id', null);
-                            }),
-
-                        Select::make('contact_id')
-                            ->label('Kontaktna oseba')
-                            ->options(function ($get) {
-                                $customerId = $get('customer_id');
-                                if (! $customerId) {
-                                    return [];
-                                }
-
-                                return Contact::where('customer_id', $customerId)
-                                    ->pluck('name', 'id')
-                                    ->toArray();
-                            })
-                            ->searchable()
-                            ->preload(),
+                            ->required(),
 
                         DatePicker::make('issued_at')
                             ->label('Datum izdaje')
@@ -64,137 +34,28 @@ class QuoteForm
                             ->label('Veljavna do')
                             ->default(now()->addDays(30))
                             ->required()
-                            ->native(false)
-                            ->after('issued_at'),
+                            ->native(false),
 
                         Select::make('status')
                             ->label('Status')
                             ->options(QuoteStatus::class)
                             ->default(QuoteStatus::Draft)
-                            ->required()
-                            ->disabled(fn (?string $operation) => $operation === 'create'),
+                            ->required(),
 
                         Hidden::make('user_id')
                             ->default(auth()->id()),
-                    ])
-                    ->columns(2),
 
-                Section::make('Postavke')
-                    ->schema([
-                        Repeater::make('items')
-                            ->relationship()
-                            ->schema([
-                                Select::make('product_id')
-                                    ->label('Produkt')
-                                    ->options(Product::where('is_active', true)->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(function (?int $state, $set) {
-                                        if (! $state) {
-                                            return;
-                                        }
+                        Hidden::make('subtotal')
+                            ->default(0),
 
-                                        $product = Product::find($state);
-                                        if ($product) {
-                                            $set('description', $product->description ?? $product->name);
-                                            $set('unit', $product->unit->value);
-                                            $set('unit_price', number_format((float) $product->price, 2, '.', ''));
-                                            $set('vat_rate', $product->vat_rate->value);
-                                        }
-                                    }),
+                        Hidden::make('discount_total')
+                            ->default(0),
 
-                                Textarea::make('description')
-                                    ->label('Opis')
-                                    ->required()
-                                    ->rows(2)
-                                    ->columnSpanFull(),
+                        Hidden::make('vat_total')
+                            ->default(0),
 
-                                Select::make('unit')
-                                    ->label('Enota')
-                                    ->options(ProductUnit::class)
-                                    ->required(),
-
-                                TextInput::make('quantity')
-                                    ->label('Količina')
-                                    ->numeric()
-                                    ->default(1)
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn ($set, $get) => self::updateLineTotals($set, $get)),
-
-                                TextInput::make('unit_price')
-                                    ->label('Cena/enoto')
-                                    ->numeric()
-                                    ->prefix('€')
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn ($set, $get) => self::updateLineTotals($set, $get)),
-
-                                TextInput::make('discount_percent')
-                                    ->label('Popust %')
-                                    ->numeric()
-                                    ->default(0)
-                                    ->suffix('%')
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn ($set, $get) => self::updateLineTotals($set, $get)),
-
-                                Select::make('vat_rate')
-                                    ->label('DDV stopnja')
-                                    ->options(VatRate::class)
-                                    ->required()
-                                    ->live()
-                                    ->afterStateUpdated(fn ($set, $get) => self::updateLineTotals($set, $get)),
-
-                                Placeholder::make('line_net')
-                                    ->label('Neto')
-                                    ->content(fn ($get) => '€ '.number_format((float) ($get('line_net') ?? 0), 2, ',', '.')),
-
-                                Placeholder::make('line_vat')
-                                    ->label('DDV')
-                                    ->content(fn ($get) => '€ '.number_format((float) ($get('line_vat') ?? 0), 2, ',', '.')),
-
-                                Placeholder::make('line_total')
-                                    ->label('Skupaj')
-                                    ->content(fn ($get) => '€ '.number_format((float) ($get('line_total') ?? 0), 2, ',', '.')),
-
-                                // Hidden fields to store calculated values
-                                Hidden::make('line_net'),
-                                Hidden::make('line_vat'),
-                                Hidden::make('line_total'),
-                            ])
-                            ->columns(3)
-                            ->reorderable('sort')
-                            ->defaultItems(1)
-                            ->addActionLabel('Dodaj postavko')
-                            ->live()
-                            ->afterStateUpdated(fn ($set, $get) => self::updateDocumentTotals($set, $get)),
-                    ]),
-
-                Section::make('Seštevki')
-                    ->schema([
-                        Placeholder::make('subtotal_display')
-                            ->label('Neto vsota')
-                            ->content(fn ($get) => '€ '.number_format((float) ($get('subtotal') ?? 0), 2, ',', '.')),
-
-                        Placeholder::make('discount_total_display')
-                            ->label('Popust skupaj')
-                            ->content(fn ($get) => '€ '.number_format((float) ($get('discount_total') ?? 0), 2, ',', '.')),
-
-                        Placeholder::make('vat_total_display')
-                            ->label('DDV skupaj')
-                            ->content(fn ($get) => '€ '.number_format((float) ($get('vat_total') ?? 0), 2, ',', '.')),
-
-                        Placeholder::make('total_display')
-                            ->label('Skupaj z DDV')
-                            ->content(fn ($get) => '€ '.number_format((float) ($get('total') ?? 0), 2, ',', '.'))
-                            ->extraAttributes(['class' => 'text-xl font-bold']),
-
-                        // Hidden fields to store totals
-                        Hidden::make('subtotal'),
-                        Hidden::make('discount_total'),
-                        Hidden::make('vat_total'),
-                        Hidden::make('total'),
+                        Hidden::make('total')
+                            ->default(0),
                     ])
                     ->columns(2),
 
@@ -210,40 +71,5 @@ class QuoteForm
                     ])
                     ->collapsible(),
             ]);
-    }
-
-    protected static function updateLineTotals($set, $get): void
-    {
-        $calculated = DocumentTotalsCalculator::calculateLineItem([
-            'quantity' => $get('quantity') ?? 0,
-            'unit_price' => $get('unit_price') ?? 0,
-            'discount_percent' => $get('discount_percent') ?? 0,
-            'vat_rate' => $get('vat_rate') ?? '0',
-        ]);
-
-        $set('line_net', $calculated['line_net']);
-        $set('line_vat', $calculated['line_vat']);
-        $set('line_total', $calculated['line_total']);
-    }
-
-    protected static function updateDocumentTotals($set, $get): void
-    {
-        $items = $get('../../items') ?? [];
-
-        if (empty($items)) {
-            $set('../../subtotal', '0.00');
-            $set('../../discount_total', '0.00');
-            $set('../../vat_total', '0.00');
-            $set('../../total', '0.00');
-
-            return;
-        }
-
-        $totals = DocumentTotalsCalculator::calculateDocumentTotals($items);
-
-        $set('../../subtotal', $totals['subtotal']);
-        $set('../../discount_total', $totals['discount_total']);
-        $set('../../vat_total', $totals['vat_total']);
-        $set('../../total', $totals['total']);
     }
 }

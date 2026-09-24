@@ -79,7 +79,9 @@ class QuoteObserver
 
         return DB::transaction(function () use ($year) {
             // Lock table to prevent race conditions
-            $lastQuote = Quote::lockForUpdate()
+            // Include soft deleted quotes to avoid duplicate numbers
+            $lastQuote = Quote::withTrashed()
+                ->lockForUpdate()
                 ->where('number', 'like', "P-{$year}-%")
                 ->orderByDesc('number')
                 ->first();

@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Quote;
+use App\Services\DocumentTotalsCalculator;
 use Illuminate\Support\Facades\DB;
 
 class QuoteObserver
@@ -14,6 +15,57 @@ class QuoteObserver
     {
         if (empty($quote->number)) {
             $quote->number = $this->generateQuoteNumber($quote);
+        }
+    }
+
+    /**
+     * Handle the Quote "saved" event.
+     * Calculate totals from items after quote is saved.
+     */
+    public function saved(Quote $quote): void
+    {
+        // Reload items to ensure we have the latest data
+        $quote->load('items');
+
+        if ($quote->items->isEmpty()) {
+            return;
+        }
+
+        // Prepare items array for calculator
+        $items = $quote->items->map(function ($item) {
+            return [
+                'quantity' => $item->quantity,
+                'unit_price' => $item->unit_price,
+                'discount_percent' => $item->discount_percent,
+                'vat_rate' => $item->vat_rate,
+            ];
+        })->toArray();
+
+        // Calculate totals
+        $totals = DocumentTotalsCalculator::calculateDocumentTotals($items);
+
+        // Update quote totals WITHOUT triggering another save event
+        $quote->updateQuietly([
+            'subtotal' => $totals['subtotal'],
+            'discount_total' => $totals['discount_total'],
+            'vat_total' => $totals['vat_total'],
+            'total' => $totals['total'],
+        ]);
+
+        // Also update line totals for each item
+        foreach ($quote->items as $index => $item) {
+            $lineCalculated = DocumentTotalsCalculator::calculateLineItem([
+                'quantity' => $item->quantity,
+                'unit_price' => $item->unit_price,
+                'discount_percent' => $item->discount_percent,
+                'vat_rate' => $item->vat_rate,
+            ]);
+
+            $item->updateQuietly([
+                'line_net' => $lineCalculated['line_net'],
+                'line_vat' => $lineCalculated['line_vat'],
+                'line_total' => $lineCalculated['line_total'],
+            ]);
         }
     }
 

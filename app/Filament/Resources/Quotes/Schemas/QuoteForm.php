@@ -59,6 +59,61 @@ class QuoteForm
                     ])
                     ->columns(2),
 
+                Section::make('Postavke')
+                    ->description('Postavke ponudbe - seštevki se izračunajo pri shranjevanju')
+                    ->schema([
+                        \Filament\Forms\Components\Repeater::make('items')
+                            ->relationship()
+                            ->schema([
+                                Select::make('product_id')
+                                    ->label('Produkt')
+                                    ->relationship('product', 'name', fn ($query) => $query->where('is_active', true))
+                                    ->searchable()
+                                    ->preload(),
+
+                                \Filament\Forms\Components\TextInput::make('description')
+                                    ->label('Opis')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Select::make('unit')
+                                    ->label('Enota')
+                                    ->options(\App\Enums\ProductUnit::class)
+                                    ->default(\App\Enums\ProductUnit::Piece)
+                                    ->required(),
+
+                                \Filament\Forms\Components\TextInput::make('quantity')
+                                    ->label('Količina')
+                                    ->numeric()
+                                    ->default(1)
+                                    ->required(),
+
+                                \Filament\Forms\Components\TextInput::make('unit_price')
+                                    ->label('Cena/enoto')
+                                    ->numeric()
+                                    ->prefix('€')
+                                    ->default(0)
+                                    ->required(),
+
+                                \Filament\Forms\Components\TextInput::make('discount_percent')
+                                    ->label('Popust %')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->suffix('%'),
+
+                                Select::make('vat_rate')
+                                    ->label('DDV')
+                                    ->options(\App\Enums\VatRate::class)
+                                    ->default(\App\Enums\VatRate::Rate22)
+                                    ->required(),
+                            ])
+                            ->columns(3)
+                            ->reorderable('sort')
+                            ->defaultItems(1)
+                            ->addActionLabel('Dodaj postavko')
+                            ->collapsible(),
+                    ]),
+
                 Section::make('Dodatno')
                     ->schema([
                         Textarea::make('notes')

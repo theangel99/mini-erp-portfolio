@@ -69,7 +69,21 @@ class QuoteForm
                                     ->label('Produkt')
                                     ->relationship('product', 'name', fn ($query) => $query->where('is_active', true))
                                     ->searchable()
-                                    ->preload(),
+                                    ->preload()
+                                    ->afterStateUpdated(function ($state, $set) {
+                                        if (!$state) {
+                                            return;
+                                        }
+
+                                        $product = \App\Models\Product::find($state);
+                                        if ($product) {
+                                            $set('description', $product->description ?? $product->name);
+                                            $set('unit', $product->unit->value);
+                                            $set('unit_price', (float) $product->price);
+                                            $set('vat_rate', $product->vat_rate->value);
+                                        }
+                                    })
+                                    ->live(onBlur: true),
 
                                 \Filament\Forms\Components\TextInput::make('description')
                                     ->label('Opis')

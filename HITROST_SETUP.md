@@ -22,14 +22,9 @@
 V **lokalnem terminalu** (v mapi projekta):
 
 ```bash
-# Dodaj GitHub remote (zamenjaj USERNAME s svojim!)
-git remote add origin https://github.com/USERNAME/mini-erp-portfolio.git
-
-# Preimenuj branch v main
-git branch -M main
-
-# Push vse na GitHub
-git push -u origin main
+# ✅ ŽE NAREJENO - projekt je že na GitHubu!
+# Če želiš preveriti:
+git remote -v
 ```
 
 **Opomba:** Če GitHub zahteva authentication, uporabi **Personal Access Token** (ne gesla):
@@ -55,16 +50,14 @@ V DirectAdmin Terminal izvedi:
 # Pojdi v mapo domene
 cd ~/domains/veberdigital.com/
 
-# Kloniraj projekt (zamenjaj USERNAME!)
-git clone https://github.com/USERNAME/mini-erp-portfolio.git mini-erp
+# Kloniraj projekt
+git clone https://github.com/theangel99/mini-erp-portfolio.git mini-erp
 
 # Pojdi v projekt
 cd mini-erp
 ```
 
-**Če GitHub prosi za credentials:**
-- Username: tvoj GitHub username
-- Password: tvoj Personal Access Token (ne pravo geslo!)
+**Opomba:** Repository je PUBLIC, zato ne potrebuješ credentials za clone.
 
 ---
 

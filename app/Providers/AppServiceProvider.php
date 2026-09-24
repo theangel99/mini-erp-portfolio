@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Quote;
+use App\Models\QuoteItem;
 use App\Observers\QuoteObserver;
+use App\Observers\QuoteItemObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Quote::observe(QuoteObserver::class);
+        QuoteItem::observe(QuoteItemObserver::class);
     }
 }

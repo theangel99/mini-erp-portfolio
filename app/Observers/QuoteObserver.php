@@ -37,7 +37,7 @@ class QuoteObserver
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
                 'discount_percent' => $item->discount_percent,
-                'vat_rate' => $item->vat_rate,
+                'vat_rate' => $item->vat_rate->value,
             ];
         })->toArray();
 
@@ -58,7 +58,7 @@ class QuoteObserver
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
                 'discount_percent' => $item->discount_percent,
-                'vat_rate' => $item->vat_rate,
+                'vat_rate' => $item->vat_rate->value,
             ]);
 
             $item->updateQuietly([

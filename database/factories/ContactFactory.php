@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Contact;
+use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,13 +16,22 @@ class ContactFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+    /**
+     * Get Faker instance.
+     */
+    protected function faker(): Generator
+    {
+        return \Faker\Factory::create();
+    }
+
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
-            'position' => $this->faker->jobTitle(),
-            'email' => $this->faker->safeEmail(),
-            'phone' => $this->faker->phoneNumber(),
+            'name' => $this->faker()->name(),
+            'position' => $this->faker()->jobTitle(),
+            'email' => $this->faker()->safeEmail(),
+            'phone' => $this->faker()->phoneNumber(),
             'is_primary' => false,
         ];
     }

@@ -2,7 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Enums\QuoteStatus;
+use App\Models\Customer;
 use App\Models\Quote;
+use App\Models\User;
+use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,20 +19,29 @@ class QuoteFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+    /**
+     * Get Faker instance.
+     */
+    protected function faker(): Generator
+    {
+        return \Faker\Factory::create();
+    }
+
     public function definition(): array
     {
-        $issuedAt = $this->faker->dateTimeBetween('-6 months', 'now');
+        $issuedAt = $this->faker()->dateTimeBetween('-6 months', 'now');
         $validUntil = (clone $issuedAt)->modify('+30 days');
 
         return [
-            'customer_id' => \App\Models\Customer::factory(),
+            'customer_id' => Customer::factory(),
             'contact_id' => null, // Will be set by relationship
-            'user_id' => \App\Models\User::factory(),
+            'user_id' => User::factory(),
             'issued_at' => $issuedAt,
             'valid_until' => $validUntil,
-            'status' => $this->faker->randomElement(\App\Enums\QuoteStatus::cases()),
-            'notes' => $this->faker->optional()->sentence(),
-            'terms' => $this->faker->optional()->paragraph(),
+            'status' => $this->faker()->randomElement(QuoteStatus::cases()),
+            'notes' => $this->faker()->optional()->sentence(),
+            'terms' => $this->faker()->optional()->paragraph(),
             'subtotal' => 0, // Will be calculated
             'discount_total' => 0,
             'vat_total' => 0,

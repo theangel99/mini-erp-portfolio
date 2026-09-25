@@ -2,7 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Enums\ProductUnit;
+use App\Enums\VatRate;
+use App\Models\Product;
+use App\Models\Quote;
 use App\Models\QuoteItem;
+use App\Services\DocumentTotalsCalculator;
+use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,16 +21,25 @@ class QuoteItemFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+    /**
+     * Get Faker instance.
+     */
+    protected function faker(): Generator
+    {
+        return \Faker\Factory::create();
+    }
+
     public function definition(): array
     {
-        $product = \App\Models\Product::inRandomOrder()->first();
-        $quantity = $this->faker->randomFloat(3, 1, 100);
-        $unitPrice = $product ? (float) $product->price : $this->faker->randomFloat(2, 10, 1000);
-        $discountPercent = $this->faker->randomElement([0, 0, 0, 5, 10, 15]);
-        $vatRate = $product ? $product->vat_rate : $this->faker->randomElement(\App\Enums\VatRate::cases());
+        $product = Product::inRandomOrder()->first();
+        $quantity = $this->faker()->randomFloat(3, 1, 100);
+        $unitPrice = $product ? (float) $product->price : $this->faker()->randomFloat(2, 10, 1000);
+        $discountPercent = $this->faker()->randomElement([0, 0, 0, 5, 10, 15]);
+        $vatRate = $product ? $product->vat_rate : $this->faker()->randomElement(VatRate::cases());
 
         // Calculate line totals
-        $calculated = \App\Services\DocumentTotalsCalculator::calculateLineItem([
+        $calculated = DocumentTotalsCalculator::calculateLineItem([
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
             'discount_percent' => $discountPercent,
@@ -32,11 +47,11 @@ class QuoteItemFactory extends Factory
         ]);
 
         return [
-            'quote_id' => \App\Models\Quote::factory(),
+            'quote_id' => Quote::factory(),
             'product_id' => $product?->id,
             'sort' => 0,
-            'description' => $product ? ($product->description ?? $product->name) : $this->faker->sentence(),
-            'unit' => $product ? $product->unit : $this->faker->randomElement(\App\Enums\ProductUnit::cases()),
+            'description' => $product ? ($product->description ?? $product->name) : $this->faker()->sentence(),
+            'unit' => $product ? $product->unit : $this->faker()->randomElement(ProductUnit::cases()),
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
             'discount_percent' => $discountPercent,

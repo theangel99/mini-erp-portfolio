@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\CompanySetting;
+use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,6 +16,15 @@ class CompanySettingFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+    /**
+     * Get Faker instance.
+     */
+    protected function faker(): Generator
+    {
+        return \Faker\Factory::create();
+    }
+
     public function definition(): array
     {
         return [

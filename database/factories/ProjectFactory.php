@@ -6,6 +6,7 @@ use App\Enums\ProjectStatus;
 use App\Models\Customer;
 use App\Models\Project;
 use App\Models\User;
+use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,17 +19,26 @@ class ProjectFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+    /**
+     * Get Faker instance.
+     */
+    protected function faker(): Generator
+    {
+        return \Faker\Factory::create();
+    }
+
     public function definition(): array
     {
-        $startsAt = now()->subDays($this->faker->numberBetween(10, 60));
-        $endsAt = $startsAt->copy()->addDays($this->faker->numberBetween(30, 90));
+        $startsAt = now()->subDays($this->faker()->numberBetween(10, 60));
+        $endsAt = $startsAt->copy()->addDays($this->faker()->numberBetween(30, 90));
 
         return [
-            'name' => $this->faker->words(3, true),
+            'name' => $this->faker()->words(3, true),
             'customer_id' => Customer::factory(),
             'quote_id' => null,
-            'description' => $this->faker->optional()->paragraph(),
-            'status' => $this->faker->randomElement(ProjectStatus::cases()),
+            'description' => $this->faker()->optional()->paragraph(),
+            'status' => $this->faker()->randomElement(ProjectStatus::cases()),
             'starts_at' => $startsAt,
             'ends_at' => $endsAt,
             'user_id' => User::factory(),
@@ -39,8 +49,8 @@ class ProjectFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => ProjectStatus::InProgress,
-            'starts_at' => now()->subDays($this->faker->numberBetween(5, 30)),
-            'ends_at' => now()->addDays($this->faker->numberBetween(30, 60)),
+            'starts_at' => now()->subDays($this->faker()->numberBetween(5, 30)),
+            'ends_at' => now()->addDays($this->faker()->numberBetween(30, 60)),
         ]);
     }
 
@@ -48,8 +58,8 @@ class ProjectFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => ProjectStatus::InProgress,
-            'starts_at' => now()->subDays($this->faker->numberBetween(30, 60)),
-            'ends_at' => now()->subDays($this->faker->numberBetween(1, 10)),
+            'starts_at' => now()->subDays($this->faker()->numberBetween(30, 60)),
+            'ends_at' => now()->subDays($this->faker()->numberBetween(1, 10)),
         ]);
     }
 }

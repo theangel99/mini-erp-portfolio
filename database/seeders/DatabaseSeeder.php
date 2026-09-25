@@ -20,15 +20,19 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create admin user directly (without factory to avoid Faker issues)
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@veberdigital.com',
-            'email_verified_at' => now(),
-            'password' => bcrypt('geslo123'),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@veberdigital.com'],
+            [
+                'name' => 'Admin User',
+                'email_verified_at' => now(),
+                'password' => bcrypt('geslo123'),
+            ]
+        );
 
         // Create company settings
-        CompanySetting::factory()->create();
+        if (! CompanySetting::exists()) {
+            CompanySetting::factory()->create();
+        }
 
         // Create customers with contacts
         Customer::factory(20)

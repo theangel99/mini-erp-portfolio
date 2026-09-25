@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Product;
+use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,7 +23,7 @@ class ProductFactory extends Factory
      */
     protected function faker(): Generator
     {
-        return \Faker\Factory::create();
+        return FakerFactory::create();
     }
 
     public function definition(): array

@@ -6,6 +6,7 @@ use App\Enums\MilestoneStatus;
 use App\Enums\WaitingOn;
 use App\Models\Milestone;
 use App\Models\Project;
+use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -25,7 +26,7 @@ class MilestoneFactory extends Factory
      */
     protected function faker(): Generator
     {
-        return \Faker\Factory::create();
+        return FakerFactory::create();
     }
 
     public function definition(): array

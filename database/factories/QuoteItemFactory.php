@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Services\DocumentTotalsCalculator;
+use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -27,7 +28,7 @@ class QuoteItemFactory extends Factory
      */
     protected function faker(): Generator
     {
-        return \Faker\Factory::create();
+        return FakerFactory::create();
     }
 
     public function definition(): array

@@ -6,6 +6,7 @@ use App\Enums\ProjectStatus;
 use App\Models\Customer;
 use App\Models\Project;
 use App\Models\User;
+use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -25,7 +26,7 @@ class ProjectFactory extends Factory
      */
     protected function faker(): Generator
     {
-        return \Faker\Factory::create();
+        return FakerFactory::create();
     }
 
     public function definition(): array

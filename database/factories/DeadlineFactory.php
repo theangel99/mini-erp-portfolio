@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\DeadlinePriority;
 use App\Models\Deadline;
 use App\Models\User;
+use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,7 +25,7 @@ class DeadlineFactory extends Factory
      */
     protected function faker(): Generator
     {
-        return \Faker\Factory::create();
+        return FakerFactory::create();
     }
 
     public function definition(): array

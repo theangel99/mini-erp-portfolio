@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\CompanySetting;
+use App\Models\Contact;
+use App\Models\Customer;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -22,15 +26,18 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create company settings
-        \App\Models\CompanySetting::factory()->create();
+        CompanySetting::factory()->create();
 
         // Create customers with contacts
-        \App\Models\Customer::factory(20)
-            ->has(\App\Models\Contact::factory()->primary())
-            ->has(\App\Models\Contact::factory()->count(rand(0, 2)))
+        Customer::factory(20)
+            ->has(Contact::factory()->primary())
+            ->has(Contact::factory()->count(rand(0, 2)))
             ->create();
 
         // Create products
-        \App\Models\Product::factory(30)->create();
+        Product::factory(30)->create();
+
+        // Seed timeline demo data
+        $this->call(TimelineSeeder::class);
     }
 }

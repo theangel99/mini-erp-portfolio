@@ -6,6 +6,7 @@ use App\Enums\MilestoneStatus;
 use App\Models\Deadline;
 use App\Models\Milestone;
 use App\Models\Project;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -13,11 +14,12 @@ use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Enums\IconPosition;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\DB;
 
 class Casovnica extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
+    protected static BackedEnum|string|null $navigationIcon = Heroicon::OutlinedClock;
 
     protected static ?string $navigationLabel = 'Časovnica';
 

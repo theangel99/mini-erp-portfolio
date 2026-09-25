@@ -25,7 +25,7 @@
     $dotSize = $isCurrent ? 'w-5 h-5' : 'w-4 h-4';
 @endphp
 
-<div class="flex flex-col items-center" style="flex: 1; min-width: 100px;">
+<div class="flex flex-col items-center flex-grow min-w-[120px] max-w-[200px]">
     {{-- Dot --}}
     <div class="relative z-10 flex items-center justify-center {{ $dotSize }} rounded-full {{ $dotColor }} border-2 {{ $isCurrent ? 'shadow-lg' : '' }}">
         @if($isDone)
@@ -36,8 +36,8 @@
     </div>
 
     {{-- Content --}}
-    <div class="mt-3 text-center px-2" style="width: 100%;">
-        <div class="text-sm font-semibold {{ $textColor }} {{ $isSkipped ? 'line-through' : '' }}" style="word-wrap: break-word;">
+    <div class="mt-3 text-center px-2 w-full">
+        <div class="text-sm font-semibold {{ $textColor }} {{ $isSkipped ? 'line-through' : '' }} break-words">
             {{ $milestone->title }}
         </div>
 

@@ -19,10 +19,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create admin user
-        User::factory()->create([
+        // Create admin user directly (without factory to avoid Faker issues)
+        User::create([
             'name' => 'Admin User',
             'email' => 'admin@veberdigital.com',
+            'email_verified_at' => now(),
+            'password' => bcrypt('geslo123'),
         ]);
 
         // Create company settings

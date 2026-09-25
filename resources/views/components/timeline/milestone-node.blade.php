@@ -8,14 +8,15 @@
 
 <div class="flex flex-col items-center flex-grow min-w-[120px] max-w-[200px]">
     {{-- Dot --}}
-    <div class="relative z-10 flex items-center justify-center {{ $isCurrent ? 'w-5 h-5 shadow-lg' : 'w-4 h-4' }} rounded-full border-2
+    <div class="relative z-10 flex items-center justify-center rounded-full border-2 flex-shrink-0
+        {{ $isCurrent ? 'w-5 h-5 shadow-lg' : 'w-4 h-4' }}
         @if($isDone) bg-green-500 border-green-600
         @elseif($isCurrent && $milestone->status === \App\Enums\MilestoneStatus::Waiting) bg-orange-500 border-orange-600 animate-pulse
         @elseif($isCurrent) bg-blue-500 border-blue-600 animate-pulse
         @else bg-gray-300 dark:bg-gray-600 border-gray-400 dark:border-gray-500
         @endif">
         @if($isDone)
-            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-2.5 h-2.5 text-white flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" style="width: 10px; height: 10px;">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
             </svg>
         @endif
@@ -23,8 +24,7 @@
 
     {{-- Content --}}
     <div class="mt-3 text-center px-2 w-full">
-        <p style="color: white; background: red; padding: 4px;">TEST {{ $milestone->title }}</p>
-        <div class="text-sm font-semibold break-words text-white bg-blue-500 p-2
+        <div class="text-sm font-semibold break-words
             @if($isDone) text-green-700 dark:text-green-400
             @elseif($isCurrent && $milestone->status === \App\Enums\MilestoneStatus::Waiting) text-orange-700 dark:text-orange-400
             @elseif($isCurrent) text-blue-700 dark:text-blue-400

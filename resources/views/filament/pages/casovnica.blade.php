@@ -115,7 +115,7 @@
                                 Čakamo na:
                             </span>
                             <span class="text-sm text-gray-900 dark:text-white ml-2">
-                                {{ $currentMilestone->waiting_on ? \App\Enums\WaitingOn::from($currentMilestone->waiting_on)->getLabel() : 'N/A' }}
+                                {{ $currentMilestone->waiting_on?->getLabel() ?? 'N/A' }}
                             </span>
                         </div>
 

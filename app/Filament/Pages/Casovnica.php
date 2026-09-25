@@ -25,7 +25,7 @@ class Casovnica extends Page
 
     protected static ?string $title = 'Časovnica';
 
-    protected static string $view = 'filament.pages.casovnica';
+    protected string $view = 'filament.pages.casovnica';
 
     protected static ?int $navigationSort = 1;
 

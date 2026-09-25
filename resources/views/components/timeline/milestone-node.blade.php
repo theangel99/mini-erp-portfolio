@@ -25,9 +25,9 @@
     $dotSize = $isCurrent ? 'w-5 h-5' : 'w-4 h-4';
 @endphp
 
-<div class="flex flex-col items-center flex-1 min-w-0">
+<div class="flex flex-col items-center flex-1 min-w-0" style="background: rgba(255,0,0,0.1);">
     {{-- Dot --}}
-    <div class="relative z-10 flex items-center justify-center {{ $dotSize }} rounded-full {{ $dotColor }} border-2 {{ $isCurrent ? 'shadow-lg' : '' }}">
+    <div class="relative z-10 flex items-center justify-center {{ $dotSize }} rounded-full {{ $dotColor }} border-2 {{ $isCurrent ? 'shadow-lg' : '' }}" style="background: rgba(0,255,0,0.3);">
         @if($isDone)
             <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>

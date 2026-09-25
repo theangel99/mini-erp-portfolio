@@ -1,8 +1,4 @@
 <x-filament-panels::page>
-    @php
-        use App\Enums\MilestoneStatus;
-    @endphp
-
     {{-- Tabs --}}
     <x-filament::tabs>
         <x-filament::tabs.item
@@ -60,7 +56,7 @@
                 {{-- Progress info --}}
                 @php
                     $total = $selectedProject->milestones->count();
-                    $done = $selectedProject->milestones->where('status', MilestoneStatus::Done)->count();
+                    $done = $selectedProject->milestones->where('status', \App\Enums\MilestoneStatus::Done)->count();
                     $percentage = $total > 0 ? round(($done / $total) * 100) : 0;
                 @endphp
 
@@ -106,7 +102,7 @@
                 $currentMilestone = $selectedProject->currentMilestone();
             @endphp
 
-            @if($currentMilestone && $currentMilestone->status === MilestoneStatus::Waiting)
+            @if($currentMilestone && $currentMilestone->status === \App\Enums\MilestoneStatus::Waiting)
                 <x-filament::section
                     :heading="'Kaj čakamo?'"
                     :description="'Projekt je trenutno v stanju čakanja'"

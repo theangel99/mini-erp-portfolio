@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Milestone;
 use App\Models\Quote;
 use App\Models\QuoteItem;
-use App\Observers\QuoteObserver;
+use App\Observers\MilestoneObserver;
 use App\Observers\QuoteItemObserver;
+use App\Observers\QuoteObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Quote::observe(QuoteObserver::class);
         QuoteItem::observe(QuoteItemObserver::class);
+        Milestone::observe(MilestoneObserver::class);
     }
 }

@@ -23,9 +23,9 @@ class MilestoneFactory extends Factory
         return [
             'project_id' => Project::factory(),
             'sort' => 0,
-            'title' => fake()->words(3, true),
-            'description' => fake()->optional()->sentence(),
-            'planned_at' => now()->addDays(fake()->numberBetween(1, 30)),
+            'title' => $this->faker->words(3, true),
+            'description' => $this->faker->optional()->sentence(),
+            'planned_at' => now()->addDays($this->faker->numberBetween(1, 30)),
             'completed_at' => null,
             'status' => MilestoneStatus::Upcoming,
             'waiting_on' => null,
@@ -38,7 +38,7 @@ class MilestoneFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => MilestoneStatus::InProgress,
-            'planned_at' => now()->subDays(fake()->numberBetween(1, 5)),
+            'planned_at' => now()->subDays($this->faker->numberBetween(1, 5)),
         ]);
     }
 
@@ -46,12 +46,12 @@ class MilestoneFactory extends Factory
     {
         $waitingSince = $daysSince !== null
             ? now()->subDays($daysSince)
-            : now()->subDays(fake()->numberBetween(1, 10));
+            : now()->subDays($this->faker->numberBetween(1, 10));
 
         return $this->state(fn (array $attributes) => [
             'status' => MilestoneStatus::Waiting,
             'waiting_on' => $waitingOn,
-            'waiting_note' => fake()->sentence(),
+            'waiting_note' => $this->faker->sentence(),
             'waiting_since' => $waitingSince,
         ]);
     }
@@ -60,12 +60,12 @@ class MilestoneFactory extends Factory
     {
         $completedAt = $daysAgo !== null
             ? now()->subDays($daysAgo)
-            : now()->subDays(fake()->numberBetween(1, 30));
+            : now()->subDays($this->faker->numberBetween(1, 30));
 
         return $this->state(fn (array $attributes) => [
             'status' => MilestoneStatus::Done,
             'completed_at' => $completedAt,
-            'planned_at' => $completedAt->copy()->subDays(fake()->numberBetween(1, 10)),
+            'planned_at' => $completedAt->copy()->subDays($this->faker->numberBetween(1, 10)),
         ]);
     }
 

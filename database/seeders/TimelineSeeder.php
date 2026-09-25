@@ -10,6 +10,7 @@ use App\Models\Deadline;
 use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\User;
+use Faker\Factory;
 use Illuminate\Database\Seeder;
 
 class TimelineSeeder extends Seeder
@@ -165,10 +166,11 @@ class TimelineSeeder extends Seeder
         $halfStartDate = now()->setMonth($halfStartMonth)->setDay(1)->startOfDay();
 
         // 6 pravočasno
+        $faker = Factory::create();
         for ($i = 0; $i < 6; $i++) {
             $dueDate = $halfStartDate->copy()->addDays(rand(1, now()->diffInDays($halfStartDate) - 1));
             Deadline::factory()->for($user)->completed(0)->create([
-                'title' => 'Opravljeno: '.fake()->words(3, true),
+                'title' => 'Opravljeno: '.$faker->words(3, true),
                 'due_at' => $dueDate,
             ]);
         }
@@ -177,7 +179,7 @@ class TimelineSeeder extends Seeder
         for ($i = 0; $i < 2; $i++) {
             $dueDate = $halfStartDate->copy()->addDays(rand(1, now()->diffInDays($halfStartDate) - 5));
             Deadline::factory()->for($user)->completed(rand(1, 5))->create([
-                'title' => 'Zamujeno: '.fake()->words(3, true),
+                'title' => 'Zamujeno: '.$faker->words(3, true),
                 'due_at' => $dueDate,
             ]);
         }

@@ -18,10 +18,10 @@ class ContactFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'position' => fake()->jobTitle(),
-            'email' => fake()->safeEmail(),
-            'phone' => fake()->phoneNumber(),
+            'name' => $this->faker->name(),
+            'position' => $this->faker->jobTitle(),
+            'email' => $this->faker->safeEmail(),
+            'phone' => $this->faker->phoneNumber(),
             'is_primary' => false,
         ];
     }

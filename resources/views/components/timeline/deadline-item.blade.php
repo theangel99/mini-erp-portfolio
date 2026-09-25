@@ -1,8 +1,6 @@
 @props(['deadline'])
 
 @php
-    use App\Enums\DeadlinePriority;
-
     $isCompleted = $deadline->isCompleted();
     $isOverdue = $deadline->isOverdue();
     $wasLate = $isCompleted && $deadline->wasCompletedOnTime() === false;
@@ -20,9 +18,9 @@
         $opacity = '';
     } else {
         $borderColor = match($deadline->priority) {
-            DeadlinePriority::High => 'border-l-danger-500 dark:border-l-danger-600',
-            DeadlinePriority::Medium => 'border-l-warning-500 dark:border-l-warning-600',
-            DeadlinePriority::Low => 'border-l-primary-500 dark:border-l-primary-600',
+            \App\Enums\DeadlinePriority::High => 'border-l-danger-500 dark:border-l-danger-600',
+            \App\Enums\DeadlinePriority::Medium => 'border-l-warning-500 dark:border-l-warning-600',
+            \App\Enums\DeadlinePriority::Low => 'border-l-primary-500 dark:border-l-primary-600',
         };
         $bgColor = 'bg-white dark:bg-gray-800';
         $opacity = '';
@@ -30,9 +28,9 @@
 
     // Priority badge colors
     $priorityColors = match($deadline->priority) {
-        DeadlinePriority::High => 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400',
-        DeadlinePriority::Medium => 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400',
-        DeadlinePriority::Low => 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400',
+        \App\Enums\DeadlinePriority::High => 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400',
+        \App\Enums\DeadlinePriority::Medium => 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400',
+        \App\Enums\DeadlinePriority::Low => 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400',
     };
 @endphp
 

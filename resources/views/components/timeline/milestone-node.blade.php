@@ -1,22 +1,20 @@
 @props(['milestone', 'index', 'total'])
 
 @php
-    use App\Enums\MilestoneStatus;
-
-    $isDone = $milestone->status === MilestoneStatus::Done;
-    $isCurrent = in_array($milestone->status, [MilestoneStatus::InProgress, MilestoneStatus::Waiting]);
-    $isUpcoming = $milestone->status === MilestoneStatus::Upcoming;
-    $isSkipped = $milestone->status === MilestoneStatus::Skipped;
+    $isDone = $milestone->status === \App\Enums\MilestoneStatus::Done;
+    $isCurrent = in_array($milestone->status, [\App\Enums\MilestoneStatus::InProgress, \App\Enums\MilestoneStatus::Waiting]);
+    $isUpcoming = $milestone->status === \App\Enums\MilestoneStatus::Upcoming;
+    $isSkipped = $milestone->status === \App\Enums\MilestoneStatus::Skipped;
 
     // Colors based on status
     if ($isDone) {
         $dotColor = 'bg-success-500 border-success-600';
         $textColor = 'text-success-700 dark:text-success-400';
     } elseif ($isCurrent) {
-        $dotColor = $milestone->status === MilestoneStatus::Waiting
+        $dotColor = $milestone->status === \App\Enums\MilestoneStatus::Waiting
             ? 'bg-warning-500 border-warning-600 animate-pulse'
             : 'bg-primary-500 border-primary-600 animate-pulse';
-        $textColor = $milestone->status === MilestoneStatus::Waiting
+        $textColor = $milestone->status === \App\Enums\MilestoneStatus::Waiting
             ? 'text-warning-700 dark:text-warning-400'
             : 'text-primary-700 dark:text-primary-400';
     } else {

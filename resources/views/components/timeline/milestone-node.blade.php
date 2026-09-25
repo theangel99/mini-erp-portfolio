@@ -23,7 +23,8 @@
 
     {{-- Content --}}
     <div class="mt-3 text-center px-2 w-full">
-        <div class="text-sm font-semibold break-words
+        <p style="color: white; background: red; padding: 4px;">TEST {{ $milestone->title }}</p>
+        <div class="text-sm font-semibold break-words text-white bg-blue-500 p-2
             @if($isDone) text-green-700 dark:text-green-400
             @elseif($isCurrent && $milestone->status === \App\Enums\MilestoneStatus::Waiting) text-orange-700 dark:text-orange-400
             @elseif($isCurrent) text-blue-700 dark:text-blue-400

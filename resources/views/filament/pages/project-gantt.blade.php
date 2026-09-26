@@ -18,17 +18,6 @@
             const projects = @json($this->getGanttData());
             console.log('Timeline data:', projects);
 
-            // Phase color mapping
-            const phaseColors = {
-                'editing': { bg: '#3b82f6', border: '#2563eb', label: 'Urejanje' },
-                'chief_editor_review': { bg: '#f59e0b', border: '#d97706', label: 'Pregled GU' },
-                'multimedia': { bg: '#8b5cf6', border: '#7c3aed', label: 'Multimedija' },
-                'print': { bg: '#ec4899', border: '#db2777', label: 'Tisk' },
-                'director_approval': { bg: '#f97316', border: '#ea580c', label: 'Potrditev' },
-                'sales': { bg: '#10b981', border: '#059669', label: 'Prodaja' },
-                'completed': { bg: '#059669', border: '#047857', label: 'Zaključeno' }
-            };
-
             // Convert to vis-timeline format
             const items = new vis.DataSet();
             projects.data.forEach(function(project) {
@@ -36,19 +25,20 @@
                 const endDate = new Date(startDate);
                 endDate.setDate(endDate.getDate() + project.duration);
 
-                const phaseColor = phaseColors[project.phase_value] || phaseColors['editing'];
                 const progressPercent = Math.round(project.progress * 100);
 
-                items.add({
+                // Create item with phase class and progress data attribute
+                const item = {
                     id: project.id,
                     content: `${project.text} <span class="progress-label">${progressPercent}%</span>`,
                     start: startDate,
                     end: endDate,
                     title: `${project.text}<br>Naročnik: ${project.customer}<br>Faza: ${project.phase}<br>Progress: ${progressPercent}%<br>Trajanje: ${project.duration} dni`,
-                    className: 'timeline-item-phase-' + project.phase_value,
-                    style: `background: linear-gradient(90deg, ${phaseColor.bg} 0%, ${phaseColor.bg} ${progressPercent}%, ${phaseColor.bg}40 ${progressPercent}%, ${phaseColor.bg}40 100%); border-color: ${phaseColor.border};`,
+                    className: 'phase-' + project.phase_value + ' progress-' + progressPercent,
                     type: 'range'
-                });
+                };
+
+                items.add(item);
             });
 
             // Timeline configuration
@@ -195,5 +185,66 @@
             background-color: #ef4444;
             width: 2px;
         }
+
+        /* Phase-specific colors */
+        .vis-item.phase-editing {
+            background: #3b82f6;
+            border-color: #2563eb;
+        }
+
+        .vis-item.phase-chief_editor_review {
+            background: #f59e0b;
+            border-color: #d97706;
+        }
+
+        .vis-item.phase-multimedia {
+            background: #8b5cf6;
+            border-color: #7c3aed;
+        }
+
+        .vis-item.phase-print {
+            background: #ec4899;
+            border-color: #db2777;
+        }
+
+        .vis-item.phase-director_approval {
+            background: #f97316;
+            border-color: #ea580c;
+        }
+
+        .vis-item.phase-sales {
+            background: #10b981;
+            border-color: #059669;
+        }
+
+        .vis-item.phase-completed {
+            background: #059669;
+            border-color: #047857;
+        }
+
+        /* Progress gradient overlay */
+        .vis-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(90deg, transparent 0%, transparent var(--progress, 100%), rgba(255, 255, 255, 0.5) var(--progress, 100%), rgba(255, 255, 255, 0.5) 100%);
+            pointer-events: none;
+        }
+
+        /* Progress percentage classes */
+        .vis-item.progress-0::after { --progress: 0%; }
+        .vis-item.progress-10::after { --progress: 10%; }
+        .vis-item.progress-20::after { --progress: 20%; }
+        .vis-item.progress-30::after { --progress: 30%; }
+        .vis-item.progress-40::after { --progress: 40%; }
+        .vis-item.progress-50::after { --progress: 50%; }
+        .vis-item.progress-60::after { --progress: 60%; }
+        .vis-item.progress-70::after { --progress: 70%; }
+        .vis-item.progress-80::after { --progress: 80%; }
+        .vis-item.progress-90::after { --progress: 90%; }
+        .vis-item.progress-100::after { --progress: 100%; }
     </style>
 </x-filament-panels::page>

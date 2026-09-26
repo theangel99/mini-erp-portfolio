@@ -11,11 +11,11 @@ class ProjectGantt extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
-    protected static string $view = 'filament.pages.project-gantt';
-
     protected static ?string $navigationLabel = 'Gantt časovnica';
 
     protected static ?string $title = 'Projektna časovnica';
+
+    protected string $view = 'filament.pages.project-gantt';
 
     public function getGanttData(): array
     {

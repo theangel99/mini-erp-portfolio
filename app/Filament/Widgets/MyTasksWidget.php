@@ -4,7 +4,6 @@ namespace App\Filament\Widgets;
 
 use App\Enums\TaskStatus;
 use App\Models\Task;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -49,11 +48,6 @@ class MyTasksWidget extends TableWidget
                     ->sortable()
                     ->color(fn ($record) => $record->isOverdue() ? 'danger' : null),
             ])
-            ->recordActions([
-                Action::make('view')
-                    ->label('Poglej')
-                    ->icon('heroicon-o-eye')
-                    ->url(fn ($record) => route('filament.admin.resources.tasks.edit', $record)),
-            ]);
+            ->recordUrl(fn ($record) => route('filament.admin.resources.tasks.edit', $record));
     }
 }

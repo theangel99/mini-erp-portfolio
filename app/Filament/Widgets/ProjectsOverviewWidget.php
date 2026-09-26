@@ -12,7 +12,7 @@ class ProjectsOverviewWidget extends Widget
 
     protected int | string | array $columnSpan = 'full';
 
-    protected static string $view = 'filament.widgets.projects-overview-timeline';
+    protected string $view = 'filament.widgets.projects-overview-timeline';
 
     public function getProjects(): array
     {

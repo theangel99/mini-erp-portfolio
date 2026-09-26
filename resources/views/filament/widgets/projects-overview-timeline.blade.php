@@ -13,13 +13,20 @@
         <script src="https://unpkg.com/vis-timeline@7.7.3/standalone/umd/vis-timeline-graph2d.min.js"></script>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                if (typeof vis === 'undefined') {
-                    console.error('vis-timeline library not loaded');
-                    return;
-                }
+            (function() {
+                console.log('Timeline widget script running');
 
-                const projects = @json($this->getProjects());
+                // Wait for vis library to load
+                function initTimeline() {
+                    if (typeof vis === 'undefined') {
+                        console.log('Waiting for vis library...');
+                        setTimeout(initTimeline, 100);
+                        return;
+                    }
+
+                    console.log('vis library loaded, initializing timeline');
+                    const projects = @json($this->getProjects());
+                    console.log('Projects data:', projects);
 
                 const items = new vis.DataSet();
                 projects.data.forEach(function(project) {
@@ -70,10 +77,20 @@
                     }
                 };
 
-                const container = document.getElementById('dashboard-timeline');
-                const timeline = new vis.Timeline(container, items, options);
-                timeline.fit();
-            });
+                    const container = document.getElementById('dashboard-timeline');
+                    if (!container) {
+                        console.error('Timeline container not found');
+                        return;
+                    }
+
+                    console.log('Creating timeline...');
+                    const timeline = new vis.Timeline(container, items, options);
+                    timeline.fit();
+                    console.log('Timeline created successfully');
+                }
+
+                initTimeline();
+            })();
         </script>
 
         <style>

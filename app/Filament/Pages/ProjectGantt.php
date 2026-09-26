@@ -3,11 +3,13 @@
 namespace App\Filament\Pages;
 
 use App\Models\Project;
+use BackedEnum;
 use Filament\Pages\Page;
+use Filament\Support\Icons\Heroicon;
 
 class ProjectGantt extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
     protected static string $view = 'filament.pages.project-gantt';
 

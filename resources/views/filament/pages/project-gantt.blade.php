@@ -33,6 +33,11 @@
             // Enable readonly mode for demo
             gantt.config.readonly = true;
 
+            // Auto-fit tasks to view
+            gantt.config.fit_tasks = true;
+            gantt.config.auto_scheduling = false;
+            gantt.config.auto_scheduling_strict = false;
+
             // Slovenian locale customization
             gantt.locale = {
                 date: {
@@ -80,6 +85,11 @@
             const ganttData = @json($this->getGanttData());
             console.log('Gantt data:', ganttData);
             gantt.parse(ganttData);
+
+            // Auto-zoom to show all tasks
+            gantt.attachEvent("onGanttReady", function(){
+                gantt.autoSchedule();
+            });
         });
     </script>
 

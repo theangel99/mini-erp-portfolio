@@ -14,7 +14,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Pages\Page\Concerns\HasTabs;
 use Filament\Support\Enums\IconPosition;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -27,7 +26,6 @@ use Illuminate\Support\Facades\DB;
 class Casovnica extends Page implements HasTable
 {
     use InteractsWithTable;
-    use HasTabs;
 
     protected static BackedEnum|string|null $navigationIcon = Heroicon::OutlinedClock;
 
@@ -42,14 +40,6 @@ class Casovnica extends Page implements HasTable
     public ?int $selectedProjectId = null;
 
     public ?Project $selectedProject = null;
-
-    public function getTabs(): array
-    {
-        return [
-            'projects' => 'Projekti',
-            'deadlines' => 'Moji roki',
-        ];
-    }
 
     public function mount(): void
     {

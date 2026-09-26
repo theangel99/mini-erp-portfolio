@@ -1,6 +1,25 @@
 <x-filament-panels::page>
+    {{-- Tabs --}}
+    <x-filament::tabs class="mb-6">
+        <x-filament::tabs.item
+            :active="request()->query('tab', 'projects') === 'projects'"
+            tag="a"
+            :href="route('filament.admin.pages.casovnica', ['tab' => 'projects', 'project' => $selectedProjectId])"
+        >
+            Projekti
+        </x-filament::tabs.item>
+
+        <x-filament::tabs.item
+            :active="request()->query('tab') === 'deadlines'"
+            tag="a"
+            :href="route('filament.admin.pages.casovnica', ['tab' => 'deadlines'])"
+        >
+            Moji roki
+        </x-filament::tabs.item>
+    </x-filament::tabs>
+
     {{-- Projects Tab --}}
-    @if($activeTab === 'projects')
+    @if(request()->query('tab', 'projects') === 'projects')
         @if($selectedProject)
             {{-- Project Selector --}}
             <div class="mb-6">
@@ -141,7 +160,7 @@
     @endif
 
     {{-- Deadlines Tab --}}
-    @if($activeTab === 'deadlines')
+    @if(request()->query('tab') === 'deadlines')
         {{-- Stats Overview --}}
         @php
             $stats = $this->getDeadlineStats();

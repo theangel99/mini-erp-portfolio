@@ -1,43 +1,49 @@
 <?php
 
-namespace App\Filament\Resources\Projects\Tables;
+namespace App\Filament\Resources\Tasks\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
-class ProjectsTable
+class TasksTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('project.name')
                     ->searchable(),
-                TextColumn::make('customer.name')
-                    ->searchable(),
-                TextColumn::make('quote.id')
-                    ->searchable(),
+                TextColumn::make('title')
+                    ->searchable()
+                    ->description(fn ($record) => $record->description),
+                TextColumn::make('assignedTo.name')
+                    ->label('Dodeljeno')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('assignedBy.name')
+                    ->label('Dodelil')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')
                     ->badge()
                     ->searchable(),
-                TextColumn::make('current_phase')
+                TextColumn::make('priority')
                     ->badge()
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('starts_at')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('ends_at')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('user.name')
                     ->searchable(),
+                TextColumn::make('due_at')
+                    ->dateTime()
+                    ->sortable(),
+                TextColumn::make('completed_at')
+                    ->dateTime()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -55,6 +61,7 @@ class ProjectsTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
+                ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

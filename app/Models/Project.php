@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ProjectStatus;
+use App\Enums\PublishingPhase;
 use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,7 @@ class Project extends Model
         'quote_id',
         'description',
         'status',
+        'current_phase',
         'starts_at',
         'ends_at',
         'user_id',
@@ -28,6 +30,7 @@ class Project extends Model
 
     protected $casts = [
         'status' => ProjectStatus::class,
+        'current_phase' => PublishingPhase::class,
         'starts_at' => 'date',
         'ends_at' => 'date',
     ];
@@ -62,5 +65,22 @@ class Project extends Model
         return $this->milestones()
             ->whereIn('status', ['in_progress', 'waiting'])
             ->first();
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function advanceToNextPhase(): void
+    {
+        if ($nextPhase = $this->current_phase->getNextPhase()) {
+            $this->update(['current_phase' => $nextPhase]);
+        }
+    }
+
+    public function canAdvancePhase(): bool
+    {
+        return $this->current_phase->getNextPhase() !== null;
     }
 }

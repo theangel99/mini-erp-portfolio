@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
         // Create products
         Product::factory(30)->create();
 
-        // Seed timeline demo data
-        $this->call(TimelineSeeder::class);
+        // Seed publishing workflow demo data
+        $this->call(PublishingWorkflowSeeder::class);
     }
 }

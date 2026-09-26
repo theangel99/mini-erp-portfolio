@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Projects\Schemas;
 
 use App\Enums\ProjectStatus;
+use App\Enums\PublishingPhase;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -26,6 +27,10 @@ class ProjectForm
                 Select::make('status')
                     ->options(ProjectStatus::class)
                     ->required(),
+                Select::make('current_phase')
+                    ->options(PublishingPhase::class)
+                    ->required()
+                    ->default(PublishingPhase::Editing),
                 DatePicker::make('starts_at'),
                 DatePicker::make('ends_at'),
                 Select::make('user_id')

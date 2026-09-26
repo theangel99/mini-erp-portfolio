@@ -7,6 +7,7 @@ use App\Models\Deadline;
 use App\Models\Milestone;
 use App\Models\Project;
 use BackedEnum;
+use Devletes\FilamentTimelineView\Tables\Columns\TimelineEntry;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -15,10 +16,17 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Enums\IconPosition;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Grouping\Group;
+use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
 
-class Casovnica extends Page
+class Casovnica extends Page implements HasTable
 {
+    use InteractsWithTable;
+
     protected static BackedEnum|string|null $navigationIcon = Heroicon::OutlinedClock;
 
     protected static ?string $navigationLabel = 'Časovnica';
@@ -185,54 +193,6 @@ class Casovnica extends Page
             ->toArray();
     }
 
-    public function getDeadlinesGrouped(): array
-    {
-        $user = auth()->user();
-        $now = now();
-
-        return [
-            'overdue' => Deadline::where('user_id', $user->id)
-                ->whereNull('completed_at')
-                ->where('due_at', '<', $now)
-                ->orderBy('due_at')
-                ->get(),
-
-            'today' => Deadline::where('user_id', $user->id)
-                ->whereNull('completed_at')
-                ->whereDate('due_at', $now->toDateString())
-                ->orderBy('due_at')
-                ->get(),
-
-            'tomorrow' => Deadline::where('user_id', $user->id)
-                ->whereNull('completed_at')
-                ->whereDate('due_at', $now->copy()->addDay()->toDateString())
-                ->orderBy('due_at')
-                ->get(),
-
-            'this_week' => Deadline::where('user_id', $user->id)
-                ->whereNull('completed_at')
-                ->whereBetween('due_at', [
-                    $now->copy()->addDays(2)->startOfDay(),
-                    $now->copy()->endOfWeek(),
-                ])
-                ->orderBy('due_at')
-                ->get(),
-
-            'next_month' => Deadline::where('user_id', $user->id)
-                ->whereNull('completed_at')
-                ->where('due_at', '>', $now->copy()->endOfWeek())
-                ->where('due_at', '<=', $now->copy()->addMonth())
-                ->orderBy('due_at')
-                ->get(),
-
-            'completed' => Deadline::where('user_id', $user->id)
-                ->whereNotNull('completed_at')
-                ->orderBy('completed_at', 'desc')
-                ->limit(10)
-                ->get(),
-        ];
-    }
-
     public function getDeadlineStats(): array
     {
         $user = auth()->user();
@@ -270,5 +230,34 @@ class Casovnica extends Page
                 ->whereNotNull('completed_at')
                 ->count(),
         ];
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->query(
+                Deadline::query()
+                    ->where('user_id', auth()->id())
+                    ->with(['project', 'milestone'])
+            )
+            ->defaultSort('due_at', 'desc')
+            ->columns([
+                TimelineEntry::make()
+                    ->title(fn ($record) => $record->title)
+                    ->content(fn ($record) => $record->description ?? '')
+                    ->author(
+                        fn ($record) => $record->project?->name ?? 'Osebno',
+                        fn ($record) => null
+                    )
+                    ->time('due_at', 'd. m. Y H:i'),
+            ])
+            ->defaultGroup(
+                Group::make('due_at')
+                    ->date()
+                    ->collapsible()
+                    ->orderQueryUsing(fn ($query) => $query->orderByDesc('due_at'))
+            )
+            ->paginated([10])
+            ->asTimeline();
     }
 }

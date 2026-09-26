@@ -18,6 +18,17 @@
             const projects = @json($this->getGanttData());
             console.log('Timeline data:', projects);
 
+            // Phase color mapping
+            const phaseColors = {
+                'editing': { bg: '#3b82f6', border: '#2563eb', label: 'Urejanje' },
+                'chief_editor_review': { bg: '#f59e0b', border: '#d97706', label: 'Pregled GU' },
+                'multimedia': { bg: '#8b5cf6', border: '#7c3aed', label: 'Multimedija' },
+                'print': { bg: '#ec4899', border: '#db2777', label: 'Tisk' },
+                'director_approval': { bg: '#f97316', border: '#ea580c', label: 'Potrditev' },
+                'sales': { bg: '#10b981', border: '#059669', label: 'Prodaja' },
+                'completed': { bg: '#059669', border: '#047857', label: 'Zaključeno' }
+            };
+
             // Convert to vis-timeline format
             const items = new vis.DataSet();
             projects.data.forEach(function(project) {
@@ -25,13 +36,17 @@
                 const endDate = new Date(startDate);
                 endDate.setDate(endDate.getDate() + project.duration);
 
+                const phaseColor = phaseColors[project.phase_value] || phaseColors['editing'];
+                const progressPercent = Math.round(project.progress * 100);
+
                 items.add({
                     id: project.id,
-                    content: project.text,
+                    content: `${project.text} <span class="progress-label">${progressPercent}%</span>`,
                     start: startDate,
                     end: endDate,
-                    title: `${project.text}<br>Naročnik: ${project.customer}<br>Faza: ${project.phase}<br>Trajanje: ${project.duration} dni`,
-                    className: 'timeline-item-phase-' + project.id,
+                    title: `${project.text}<br>Naročnik: ${project.customer}<br>Faza: ${project.phase}<br>Progress: ${progressPercent}%<br>Trajanje: ${project.duration} dni`,
+                    className: 'timeline-item-phase-' + project.phase_value,
+                    style: `background: linear-gradient(90deg, ${phaseColor.bg} 0%, ${phaseColor.bg} ${progressPercent}%, ${phaseColor.bg}40 ${progressPercent}%, ${phaseColor.bg}40 100%); border-color: ${phaseColor.border};`,
                     type: 'range'
                 });
             });
@@ -103,12 +118,27 @@
 
         .vis-item {
             border-radius: 6px;
-            border: none;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-width: 2px;
+            border-style: solid;
             color: white;
             font-weight: 500;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vis-item .vis-item-content {
+            padding: 8px 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .progress-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-left: 8px;
+            font-weight: 600;
         }
 
         .vis-item:hover {
@@ -117,8 +147,8 @@
         }
 
         .vis-item.vis-selected {
-            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: scale(1.02);
         }
 
         .vis-time-axis .vis-text {

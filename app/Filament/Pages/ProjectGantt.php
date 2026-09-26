@@ -39,6 +39,7 @@ class ProjectGantt extends Page
                 'customer' => $project->customer?->name ?? '',
                 'user' => $project->user?->name ?? '',
                 'phase' => $project->current_phase->getLabel(),
+                'phase_value' => $project->current_phase->value,
                 'status' => $project->status->getLabel(),
             ];
         }
